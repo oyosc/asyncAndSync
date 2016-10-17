@@ -1,0 +1,16 @@
+{
+  "name": "asyncAndsync",
+  "version": "1.0.0",
+  "description": "基于async库上的项目",
+  "main": "wheel.js",
+  "dependencies": {
+    "eventproxy": "^0.3.5",
+    "request": "^2.51.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.szzbmy.com:zbmyyang/TuyoumiMOBS.git"
+  },
+  "author": "chen",
+  "license": "ISC"
+}
