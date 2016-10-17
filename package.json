@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.szzbmy.com:zbmyyang/TuyoumiMOBS.git"
+    "url": "https://github.com/oyosc/asyncAndSync.git"
   },
   "author": "chen",
   "license": "ISC"
