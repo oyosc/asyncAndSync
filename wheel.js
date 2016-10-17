@@ -2,9 +2,9 @@
  * Created by Administrator on 2016/10/9.
  */
 var eventProxy = require('eventproxy');
-var ep = new eventProxy();
 
-var request = require('request');
+
+var ep = new eventProxy();
 
 function syncAndAsync(Tasks, callback){
     if(typeof Tasks != 'object'){
@@ -145,36 +145,4 @@ function apply(func, thisArg, args){
     return func.apply(thisArg, args);
 }
 
-var functionArr = Array(2);
-functionArr[0] = [];
-functionArr[1] = [];
-var syncFunction = function(cb){
-    request('http://www.12306.com', function(error, response, body){
-        if (!error && response.statusCode == 200) {
-            cb(null, '12306');
-        }else{
-            cb(error, null);
-        }
-    });
-}
-
-var asyncFunction = function(cb){
-    request('http://www.baidu.com', function(error, response, body){
-        if (!error && response.statusCode == 200) {
-            cb(null, 'baidu');
-        }else{
-            cb(error, null);
-        }
-    });
-}
-
-functionArr[0].push(syncFunction);
-functionArr[1].push(asyncFunction);
-
-syncAndAsync(functionArr, function(err, result){
-    if(err){
-        console.log(err);
-    }else{
-        console.log(result);
-    }
-})
+exports.asyncAndSync = syncAndAsync;
