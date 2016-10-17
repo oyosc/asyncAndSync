@@ -1,10 +1,13 @@
 /**
  * Created by Administrator on 2016/10/9.
  */
-_ = require('lodash')
+var eventProxy = require('eventproxy');
+var ep = new eventProxy();
+
+var request = require('request');
 
 function syncAndAsync(Tasks, callback){
-    if(typeof Tasks != 'array'){
+    if(typeof Tasks != 'object'){
         err = "no functionArray";
         return callback(err, null);
     }
@@ -25,7 +28,8 @@ function syncAndAsync(Tasks, callback){
         function iterateeCallback(err){
             if(err){
                 callback(err);
-            }else if(++syncIndex == length && asyncLength==asyncIndex){
+            }else if(++syncIndex == length){
+                
                 callback(null);
             }
         }
@@ -36,9 +40,15 @@ function syncAndAsync(Tasks, callback){
     }
     
     function nextTask(asyncTask, args){
-        if(asyncIndex == asyncLength && syncIndex == syncLength){
+        if(asyncIndex == asyncLength){
             allResult['async'] = [null].concat(args);
-            return callback(null, allResult);
+            ep.emit('asyncFinish', allResult);
+            ep.on('syncFinish', function(data){
+                console.log('11');
+                return callback(null, data);
+            })
+            console.log('33');
+            return;
         }
         var taskCallback = onlyOnce(baseRest(function(err, args){
             if(err){
@@ -53,13 +63,14 @@ function syncAndAsync(Tasks, callback){
         task.apply(null, args);
     }
     
-    for(var i = 0; i< Tasks.length; index++){
+    for(var i = 0; i< Tasks.length; i++){
         if(i === 0){
             syncLength = Tasks[0].length;
         }else{
             asyncLength = Tasks[1].length
         }
     }
+    
     
     for(var index = 0; index< Tasks.length; index++){
         if(index == 0){
@@ -72,19 +83,22 @@ function syncAndAsync(Tasks, callback){
                     callback1(err);
                 }));
             }, function(err){
-                callback(err, allResult);
+                allResult['sync'] = syncResult;
+                if(err){
+                    callback(err, allResult);
+                }
+                ep.emit('syncFinish', allResult);
+                ep.on('asyncFinish', function(data){
+                    console.log('22');
+                    return callback(null, data);
+                });
+                console.log('44');
             });
         }
         else{
             nextTask(Tasks[1], []);
         }
     }
-    
-    setTimeout(function(){
-        if(_.findIndex(allResult, 'async') != -1 && _.findIndex(allResult, 'sync') != -1 ){
-            callback(null, allResult);
-        }
-    }, 1000);
     
     
     
@@ -96,7 +110,7 @@ function onlyOnce(fn){
             return
         var callFn = fn;
         fn = null;
-        callFn.apply(this, arguments):
+        callFn.apply(this, arguments);
     }
 }
 
@@ -112,7 +126,7 @@ function baseRest(func){
             array[index] = args[index+start]
         }
         index = -1;
-        var otherArgs = Array[start+1];
+        var otherArgs = Array(start+1);
         while(++index< start){
             otherArgs[index] = args[index]
         }
@@ -130,3 +144,37 @@ function apply(func, thisArg, args){
     }
     return func.apply(thisArg, args);
 }
+
+var functionArr = Array(2);
+functionArr[0] = [];
+functionArr[1] = [];
+var syncFunction = function(cb){
+    request('http://www.12306.com', function(error, response, body){
+        if (!error && response.statusCode == 200) {
+            cb(null, '12306');
+        }else{
+            cb(error, null);
+        }
+    });
+}
+
+var asyncFunction = function(cb){
+    request('http://www.baidu.com', function(error, response, body){
+        if (!error && response.statusCode == 200) {
+            cb(null, 'baidu');
+        }else{
+            cb(error, null);
+        }
+    });
+}
+
+functionArr[0].push(syncFunction);
+functionArr[1].push(asyncFunction);
+
+syncAndAsync(functionArr, function(err, result){
+    if(err){
+        console.log(err);
+    }else{
+        console.log(result);
+    }
+})
