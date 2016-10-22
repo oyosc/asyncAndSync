@@ -11,6 +11,9 @@
     "type": "git",
     "url": "https://github.com/oyosc/asyncAndSync.git"
   },
+  "scripts": {
+    "test": "wheel.js"
+  },
   "author": "chen",
   "license": "ISC"
 }
