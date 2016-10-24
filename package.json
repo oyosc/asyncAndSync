@@ -12,7 +12,7 @@
     "url": "https://github.com/oyosc/asyncAndSync.git"
   },
   "scripts": {
-    "test": "test/index.js"
+    "test": "make test"
   },
   "author": "chen",
   "license": "ISC"
