@@ -13,7 +13,7 @@
     "url": "https://github.com/oyosc/asyncAndSync.git"
   },
   "scripts": {
-    "test": "make test"
+    "test": " ./node_modules/mocha/bin/mocha ./test"
   },
   "author": "chen",
   "license": "ISC"
