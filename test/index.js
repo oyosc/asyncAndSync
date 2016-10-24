@@ -37,6 +37,9 @@ describe('asyncAndSync', function(){
                 console.log(result);
                 done();
             }
+            else{
+                done();
+            }
         })
     });
 });
